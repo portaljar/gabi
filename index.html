@@ -1,19 +1,16 @@
-<?php
-$usuarioCorrecto = "admin";  // Cambia por tu usuario
-$passwordCorrecta = "esp12";   // Cambia por tu contraseña
 
-if (!isset($_SERVER['PHP_AUTH_USER']) || 
-    !isset($_SERVER['PHP_AUTH_PW']) || 
-    $_SERVER['PHP_AUTH_USER'] !== $usuarioCorrecto || 
-    $_SERVER['PHP_AUTH_PW'] !== $passwordCorrecta) {
-    header('WWW-Authenticate: Basic realm="Acceso Restringido"');
-    header('HTTP/1.0 401 Unauthorized');
-    die("Usuario o contraseña incorrectos");
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script>
+    // Contraseña en el hash de la URL
+    const passCorrecta = "esp12";
+    const hash = window.location.hash.substring(1);
+    
+    if (hash !== passCorrecta) {
+        document.body.innerHTML = '<div style="text-align:center;margin-top:100px;font-family:Arial"><h1>🔒 Acceso restringido</h1><p>Esta página está protegida</p></div>';
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Portal de Control de Riego</title>
