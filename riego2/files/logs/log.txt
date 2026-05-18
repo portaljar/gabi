@@ -1,0 +1,40 @@
+Log reset  - Sab 16 de may  21:58
+Zona 1 ON  - Sab 16 de may  22:00
+Zona 1 OFF - Sab 16 de may  22:04
+Zona 2 ON  - Sab 16 de may  22:05
+Zona 2 OFF - Sab 16 de may  22:09
+Zona 3 ON  - Sab 16 de may  22:10
+Zona 4 ON  - Sab 16 de may  22:15
+Zona 4 OFF - Sab 16 de may  22:19
+Reinicio   - Dom 17 de may  10:32
+Zona 1 ON  - Dom 17 de may  12:00
+Reinicio   - Dom 17 de may  12:00
+Reinicio   - Dom 17 de may  12:02
+Zona 1 OFF - Dom 17 de may  12:04
+Zona 2 ON  - Dom 17 de may  12:05
+Zona 2 OFF - Dom 17 de may  12:09
+Zona 3 ON  - Dom 17 de may  12:10
+Zona 3 OFF - Dom 17 de may  12:14
+Zona 3 OFF - Dom 17 de may  12:14
+Reinicio   - Dom 17 de may  12:14
+Zona 4 ON  - Dom 17 de may  12:15
+Zona 4 OFF - Dom 17 de may  12:19
+Reinicio   - Dom 17 de may  19:22
+Zona 1 ON  - Dom 17 de may  20:00
+Zona 1 OFF - Dom 17 de may  20:04
+Zona 2 ON  - Dom 17 de may  20:05
+Zona 2 OFF - Dom 17 de may  20:09
+Zona 3 ON  - Dom 17 de may  20:10
+Zona 3 OFF - Dom 17 de may  20:14
+Zona 4 ON  - Dom 17 de may  20:15
+Zona 4 OFF - Dom 17 de may  20:19
+Zona 1 ON  - Dom 17 de may  21:00
+Zona 1 OFF - Dom 17 de may  21:04
+Zona 2 ON  - Dom 17 de may  21:05
+Zona 2 OFF - Dom 17 de may  21:09
+Zona 3 ON  - Dom 17 de may  21:10
+Zona 3 OFF - Dom 17 de may  21:14
+Zona 4 ON  - Dom 17 de may  21:15
+Zona 4 OFF - Dom 17 de may  21:19
+Reinicio   - Lun 18 de may  11:12
+
