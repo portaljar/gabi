@@ -1,16 +1,4 @@
-<?php
-$usuarioCorrecto = "admin";  // Cambia por tu usuario
-$passwordCorrecta = "esp12";   // Cambia por tu contraseña
 
-if (!isset($_SERVER['PHP_AUTH_USER']) || 
-    !isset($_SERVER['PHP_AUTH_PW']) || 
-    $_SERVER['PHP_AUTH_USER'] !== $usuarioCorrecto || 
-    $_SERVER['PHP_AUTH_PW'] !== $passwordCorrecta) {
-    header('WWW-Authenticate: Basic realm="Acceso Restringido"');
-    header('HTTP/1.0 401 Unauthorized');
-    die("Usuario o contraseña incorrectos");
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -309,14 +297,14 @@ if (!isset($_SERVER['PHP_AUTH_USER']) ||
 
         <div class="options">
             <!-- Zona de Riego 1 -->
-            <a href="index.php" class="riego-card" id="card1">
+            <a href="/riego/index.html" class="riego-card" id="card1">
                 <h2>💧 Zona de Riego 1</h2>
                 <p>Jardín Principal | Maceteros Este</p>
                 <div class="status-badge checking" id="status1">● Comprobando...</div>
             </a>
 
             <!-- Zona de Riego 2 -->
-            <a href="/riego2/" class="riego-card" id="card2">
+            <a href="/riego2/index.html" class="riego-card" id="card2">
                 <h2>💧 Zona de Riego 2</h2>
                 <p>Huerta Trasera | Frutales</p>
                 <div class="status-badge checking" id="status2">● Comprobando...</div>
