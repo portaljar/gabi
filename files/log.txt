@@ -1,56 +1,19 @@
-Log reset  - Jue 30 de abr  18:43
-Reinicio   - Jue 30 de abr  18:48
-Reinicio   - Jue 30 de abr  19:05
-Reinicio   - Jue 30 de abr  19:59
-Zona 1 ON  - Jue 30 de abr  20:00
-Reinicio   - Jue 30 de abr  20:01
-Reinicio   - Jue 30 de abr  20:03
-Zona 1 OFF - Jue 30 de abr  20:05
-Zona 3 ON  - Jue 30 de abr  20:16
-Zona 3 OFF - Jue 30 de abr  20:20
-Zona 4 ON  - Jue 30 de abr  20:21
-Zona 4 OFF - Jue 30 de abr  20:25
-Zona 1 ON  - Jue 30 de abr  20:26
-Zona 1 OFF - Jue 30 de abr  20:30
-Zona 2 ON  - Jue 30 de abr  20:31
-Zona 2 OFF - Jue 30 de abr  20:35
-Reinicio   - Jue 30 de abr  22:22
-Reinicio   - Jue 30 de abr  22:29
-Reinicio   - Jue 30 de abr  22:33
-Reinicio   - Jue 30 de abr  22:35
-Reinicio   - Vie 1 de may  09:24
-Reinicio   - Vie 1 de may  09:26
-Reinicio   - Vie 1 de may  11:44
-Reinicio   - Vie 1 de may  11:21
-Zona 1 ON  - Vie 1 de may  11:30
-Zona 1 OFF - Vie 1 de may  11:35
-Zona 2 ON  - Vie 1 de may  11:36
-Zona 2 OFF - Vie 1 de may  11:40
-Zona 3 ON  - Vie 1 de may  11:41
-Reinicio   - Vie 1 de may  11:44
-Zona 3 OFF - Vie 1 de may  11:45
-Zona 4 ON  - Vie 1 de may  11:46
-Zona 4 OFF - Vie 1 de may  11:50
+Log reset  - Dom 17 de may  12:39
+Reinicio   - Dom 17 de may  12:40
+Reinicio   - Dom 17 de may  13:02
+Reinicio   - Dom 17 de may  19:26
+Reinicio   - Jue 1 de ene  01:01
 Reinicio   - Jue 1 de ene  01:00
 Reinicio   - Jue 1 de ene  01:00
 Reinicio   - Jue 1 de ene  01:00
-Reinicio   - Jue 1 de ene  01:00
-Reinicio   - Jue 1 de ene  01:00
-Reinicio   - Vie 1 de may  13:55
-Reinicio   - Vie 1 de may  13:22
-Reinicio   - Vie 1 de may  13:24
-Reinicio   - Vie 1 de may  16:35
-Reinicio   - Vie 1 de may  16:36
-Reinicio   - Vie 1 de may  16:46
-Reinicio   - Vie 1 de may  16:46
-Reinicio   - Vie 1 de may  16:52
-Reinicio   - Vie 1 de may  16:53
-Reinicio   - Vie 1 de may  16:54
-Reinicio   - Vie 1 de may  16:55
-Reinicio   - Vie 1 de may  16:56
-Reinicio   - Vie 1 de may  16:59
-Reinicio   - Vie 1 de may  17:01
-Reinicio   - Jue 1 de ene  01:00
-Reinicio   - Vie 1 de may  17:08
-Reinicio   - Vie 1 de may  17:13
-Reinicio   - Vie 1 de may  17:13
+Reinicio   - Mar 19 de may  18:41
+Reinicio   - Mar 19 de may  18:43
+Reinicio   - Mar 19 de may  18:44
+Reinicio   - Mar 19 de may  18:49
+Reinicio   - Mar 19 de may  18:57
+Reinicio   - Mar 19 de may  19:00
+Reinicio   - Mar 19 de may  19:01
+Reinicio   - Mar 19 de may  19:05
+Reinicio   - Mar 19 de may  19:07
+Reinicio   - Mar 19 de may  19:40
+Reinicio   - Mar 19 de may  20:45
