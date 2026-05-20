@@ -254,7 +254,11 @@
     <p>
         <span id="pie">Versión del proyecto</span><br>
         Sitio web: <a href="https://esp12.fun" target="_blank" style="color: #00ffae; text-decoration: none;">esp12.fun</a><br>
-        Contacto: <a href="mailto:portaljar@gmail.com" style="color: #00ffae; text-decoration: none;">portaljar@gmail.com</a><br>  
+        Contacto: <a href="mailto:portaljar@gmail.com" style="color: #00ffae; text-decoration: none;">portaljar@gmail.com</a><br>
+        Con la ayuda de <a href="https://chat.openai.com/" target="_blank" style="color: #00ffae; text-decoration: none;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT" style="height: 1em; vertical-align: middle; margin-right: 5px;">
+            ChatGPT
+        </a>
     </p>
 </footer>
 
@@ -281,6 +285,11 @@
     let b_conexion = true;
     let sen_tem = {};
     const statusMessage = document.getElementById('statusMessage');
+	const GITHUB_TOKEN = acState.num;
+	const GITHUB_OWNER = 'portaljar';
+	const GITHUB_REPO = 'portaljar.github.io';
+	const GITHUB_PATH = 'gabi/riego2/files/json.txt';
+	const GITHUB_BRANCH = 'main'; // o 'master' según tu repo
     
     // Inicializar estructuras según NUM_ZONES
     function initState() {
@@ -398,92 +407,84 @@
         });
     }
     
-    async function load_datos() {
-        if (panelAbierto) {
-            console.log('load_datos() cancelado - panel abierto');
-            return;
-        }
-        
-        if (statusMessage) {
-            statusMessage.innerText = 'Actualizando...';
-            statusMessage.style.color = '#f1c40f';
-        }
-        
-        try {
-            const response = await fetch('files/json.txt');
-            const config = await response.json();
-            acState = config;
-            
-            // Verificar conexión con ESP
-            if ((acState.time + 120) < (Date.now() / 1000)) {
-                b_conexion = false;
-                statusMessage.innerText = "Conectando con el dispositivo";
-                statusMessage.style.color = '#e74c3c';
-                return;
-            }
-            b_conexion = true;
-            
-            statusMessage.innerText = acState.reloj;
-            statusMessage.style.color = '#2ecc71';
-            console.log("JSON recibido:", acState);
-            datos_act();
-        } catch (error) {
-            console.error('Error cargando configuración:', error);
-        }
-    }
-
-async function saveAcState(acState) {
+   
+   async function save_datos(nuevosDatos) {
     try {
-        const response = await fetch('/files/json.txt', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(acState, null, 2)  // null, 2 para formato legible
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // 1. Obtener el SHA actual del archivo (necesario para actualizarlo)
+        const getResponse = await fetch(
+            `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github+json'
+                }
+            }
+        );
+
+        if (!getResponse.ok) throw new Error(`Error obteniendo SHA: ${getResponse.status}`);
+        const fileInfo = await getResponse.json();
+        const sha = fileInfo.sha;
+
+        // 2. Codificar el contenido en Base64
+        const contenido = JSON.stringify(nuevosDatos, null, 2);
+        const contenidoBase64 = btoa(unescape(encodeURIComponent(contenido)));
+
+        // 3. Subir el archivo actualizado
+        const putResponse = await fetch(
+            `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Actualización desde panel riego',
+                    content: contenidoBase64,
+                    sha: sha,
+                    branch: GITHUB_BRANCH
+                })
+            }
+        );
+
+        if (!putResponse.ok) {
+            const err = await putResponse.json();
+            throw new Error(`Error guardando: ${err.message}`);
         }
-        
-        const result = await response.text();
-        console.log('✅ Archivo guardado exitosamente');
+
+        console.log('JSON guardado correctamente en GitHub');
         return true;
+
     } catch (error) {
-        console.error('❌ Error guardando archivo:', error);
+        console.error('Error guardando datos:', error);
         return false;
     }
 }
+   
+	async function saveAcState(acState) {
+		try {
+			const response = await fetch('/files/json.txt', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(acState, null, 2)  // null, 2 para formato legible
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
+			const result = await response.text();
+			console.log('✅ Archivo guardado exitosamente');
+			return true;
+		} catch (error) {
+			console.error('❌ Error guardando archivo:', error);
+			return false;
+		}
+	}
 
-    
-    async function save_datos() {
-        console.log('Enviado acState:', acState);
-        if (statusMessage) {
-            statusMessage.innerText = 'Actualizando...';
-            statusMessage.style.color = '#f1c40f';
-        }
-        
-        try {
-            const response = await fetch('files/save_dat.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(acState)
-            });
-            const result = await response.json();
-            console.log(result.success ? 'Guardado!' : 'Error: ' + result.error);
-            datos_act();
-            if (statusMessage) {
-                statusMessage.innerText = acState.out_server;
-                statusMessage.style.color = '#2ecc71';
-            }
-        } catch (error) {
-            console.error('Error guardando:', error);
-            if (statusMessage) {
-                statusMessage.innerText = `Error al actualizar`;
-                statusMessage.style.color = '#e74c3c';
-            }
-        }
-    }
     
     function datos_act() {
         setTimeout(() => {
@@ -555,7 +556,15 @@ async function saveAcState(acState) {
                 break;
         }
         
-        if (case_num != 13)  saveAcState(acState);
+        if (case_num != 13){
+			const ok = await save_datos(acState);
+
+			if (ok) {
+				console.log('Guardado OK');
+			} else {
+				console.log('Error al guardar');
+			}
+		}
     }
     
     function input_out() {
