@@ -435,6 +435,30 @@
             console.error('Error cargando configuración:', error);
         }
     }
+
+async function saveAcState(acState) {
+    try {
+        const response = await fetch('/files/json.txt', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(acState, null, 2)  // null, 2 para formato legible
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.text();
+        console.log('✅ Archivo guardado exitosamente');
+        return true;
+    } catch (error) {
+        console.error('❌ Error guardando archivo:', error);
+        return false;
+    }
+}
+
     
     async function save_datos() {
         console.log('Enviado acState:', acState);
@@ -535,7 +559,7 @@
                 break;
         }
         
-        if (case_num != 13) save_datos();
+        if (case_num != 13) await saveAcState(acState);
     }
     
     function input_out() {
