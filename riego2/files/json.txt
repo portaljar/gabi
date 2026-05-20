@@ -1,0 +1,1 @@
+{"oup_ip":"Wifi no configurada ","proyec":"Control Riego","b_tempo":true,"tempo_zones":{"0":{"conf":[1,1,1,1,1,1,1,"20:00","20:04"]},"1":{"conf":[1,1,1,1,1,1,1,"20:05","20:09"]},"2":{"conf":[1,1,1,1,1,1,1,"20:10","20:14"]},"3":{"conf":[1,1,1,1,1,1,1,"20:15","20:20"]}},"rele":[true,true,true,true],"pie":"Â© 2025  Version 1.0.0 ","del_log":false}
