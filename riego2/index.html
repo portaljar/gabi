@@ -446,7 +446,7 @@
     try {
         // 1. Obtener el SHA actual del archivo (necesario para actualizarlo)
         const getResponse = await fetch(
-            `https://api.github.com/repos/portaljar/gabi/riego2/files/conf.txt`,
+            `https://api.github.com/repos/portaljar/gabi/contents/riego2/files/json.txt`,
             {
                 headers: {
                     'Authorization': `Bearer ${GITHUB_TOKEN}`,
