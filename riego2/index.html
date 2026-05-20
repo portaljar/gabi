@@ -414,7 +414,7 @@
         }
         
         try {
-            const response = await fetch('files/load_dat.php?t=' + new Date().getTime());
+            const response = await fetch('files/json.txt');
             const config = await response.json();
             acState = config;
             
