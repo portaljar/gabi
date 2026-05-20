@@ -406,7 +406,41 @@
             if (cb) cb.checked = confStringData[index] === 1;
         });
     }
-    
+
+	 async function load_datos() {
+        if (panelAbierto) {
+            console.log('load_datos() cancelado - panel abierto');
+            return;
+        }
+        
+        if (statusMessage) {
+            statusMessage.innerText = 'Actualizando...';
+            statusMessage.style.color = '#f1c40f';
+        }
+        
+        try {
+            const response = await fetch('files/json.txt');
+            const config = await response.json();
+            acState = config;
+            
+           
+            if ((acState.time + 120) < (Date.now() / 1000)) {
+                b_conexion = false;
+                statusMessage.innerText = "Conectando con el dispositivo";
+                statusMessage.style.color = '#e74c3c';
+                return;
+            }
+            b_conexion = true;
+            
+            statusMessage.innerText = acState.reloj;
+            statusMessage.style.color = '#2ecc71';
+            console.log("JSON recibido:", acState);
+            datos_act();
+        } catch (error) {
+            console.error('Error cargando configuración:', error);
+        }
+    }
+
    
    async function save_datos(nuevosDatos) {
     try {
