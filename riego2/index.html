@@ -446,7 +446,7 @@
     try {
         // 1. Obtener el SHA actual del archivo (necesario para actualizarlo)
         const getResponse = await fetch(
-            `https://api.github.com/repos/portaljar/gabi/contents/riego2/files/json.txt`,
+            `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_PATH}`,
             {
                 headers: {
                     'Authorization': `Bearer ${GITHUB_TOKEN}`,
@@ -465,7 +465,7 @@
 
         // 3. Subir el archivo actualizado
         const putResponse = await fetch(
-            `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`,
+            `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_PATH}`,
             {
                 method: 'PUT',
                 headers: {
@@ -480,6 +480,7 @@
                     branch: GITHUB_BRANCH
                 })
             }
+			console.log(putResponse.ok);
         );
 
         if (!putResponse.ok) {
@@ -495,6 +496,7 @@
         return false;
     }
 }
+   
    
 	async function saveAcState(acState) {
 		try {
