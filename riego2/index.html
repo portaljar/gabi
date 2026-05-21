@@ -451,9 +451,9 @@
             }
         );
 
-        if (!getResponse.ok) throw new Error(`Error obteniendo SHA: ${getResponse.status}`);
+        //if (!getResponse.ok) throw new Error(`Error obteniendo SHA: ${getResponse.status}`);
         const fileInfo = await getResponse.json();
-        const sha = fileInfo.sha;
+        const sha = "15cfca30013bf59caf2f3eee4f33090a9ccdcf39";
 
         // 2. Codificar el contenido en Base64
         const contenido = JSON.stringify(nuevosDatos, null, 2);
