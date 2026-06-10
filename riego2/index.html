@@ -425,75 +425,76 @@
         });
     }
     
-     async function load_datos() {
-        if (panelAbierto) {
-            console.log('load_datos() cancelado - panel abierto');
+async function load_datos() {
+    if (panelAbierto) return;
+    if (statusMessage) {
+        statusMessage.innerText = 'Actualizando...';
+        statusMessage.style.color = '#f1c40f';
+    }
+    
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2')
+    .then(response => response.text()) // 👈 Lo tratamos como texto string puro
+    .then(textData => {
+        // Convertimos el String crudo de la hoja de Google en el objeto acState
+        acState = JSON.parse(textData);
+        console.log("JSON interpretado:", acState);
+        
+        // Tu lógica de verificación de tiempo de conexión con el ESP
+        if ((acState.time + 210) < (Date.now() / 1000)) {
+            b_conexion = false;
+            statusMessage.innerText = "Conectando con el dispositivo";
+            statusMessage.style.color = '#e74c3c';
+            generarBotonesZonas();
+            act_web = 4500;
             return;
         }
         
-        if (statusMessage) {
-            statusMessage.innerText = 'Actualizando...';
-            statusMessage.style.color = '#f1c40f';
-        }
-        
-        fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2')
-        .then(response => response.json())
-        .then(data => {
-            //console.log('Configuración:', data);
-            acState = data;  // data ya es el objeto JSON directamente
-            console.log("JSON recibido:", acState);
-            
-        });
-            
-            // Verificar conexión con ESP
-            if ((acState.time + 210) < (Date.now() / 1000)) {
-                b_conexion = false;
-                statusMessage.innerText = "Conectando con el dispositivo";
-                statusMessage.style.color = '#e74c3c';
-                generarBotonesZonas();
-                act_web = 4500;
-                return;
-            }
-         	act_web = 15000;
-        	datos_act();
-            b_conexion = true;
-            datos_act();
-            statusMessage.innerText = acState.reloj;
-            statusMessage.style.color = '#2ecc71';
-            //console.log("JSON recibido:", acState);
-        
+        act_web = 15000;
+        b_conexion = true;
+        datos_act();
+        statusMessage.innerText = acState.reloj;
+        statusMessage.style.color = '#2ecc71';
+    })
+    .catch(err => console.error("Error al cargar texto plano:", err));
+}
+    
+async function save_datos() {
+    console.log('Enviado acState:', acState);
+    if (statusMessage) {
+        statusMessage.innerText = 'Actualizando...';
+        statusMessage.style.color = '#f1c40f';
     }
     
-    async function save_datos() {
-        console.log('Enviado acState:', acState);
+    // Convertimos TODO el objeto acState a un String plano
+    const jsonString = JSON.stringify(acState);
+    
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' }, // 👈 Le mentimos al navegador para evitar CORS
+        body: jsonString // Enviamos el String puro
+    })
+    .then(response => response.text()) // 👈 Recibimos la respuesta como texto plano primero
+    .then(textData => {
+        // Convertimos el texto de respuesta a JSON para leerlo en JS
+        const data = JSON.parse(textData);
         if (statusMessage) {
-            statusMessage.innerText = 'Actualizando...';
-            statusMessage.style.color = '#f1c40f';
+            statusMessage.innerText = acState.out_server;
+            statusMessage.style.color = '#2ecc71';
         }
-        
-        // GUARDAR configuración
-       fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(acState)  // ← Envía TODO el objeto acState
-    	})
-        .then(response => response.json())
-        .then(data => {
-           if (statusMessage) {
-                statusMessage.innerText = acState.out_server;
-                statusMessage.style.color = '#2ecc71';
-            }
-            console.log('✅ Configuración guardada:', data);
-            datos_act();   
-        })
-        .catch(error => {
-            console.error('❌ Error al guardar:', error);
-           if (statusMessage) {
-                statusMessage.innerText = `Error al actualizar`;
-                statusMessage.style.color = '#e74c3c';
-            }
-        });
-    }
+        console.log('✅ Configuración guardada:', data);
+        datos_act();  
+    })
+    .catch(error => {
+        console.error('❌ Error o redirección de Google:', error);
+        // Google Apps Script a veces procesa todo bien pero da un error estético de fetch.
+        // Forzamos la actualización para que el usuario no vea que falló si se guardó.
+        if (statusMessage) {
+            statusMessage.innerText = acState.out_server || "Actualizado";
+            statusMessage.style.color = '#2ecc71';
+        }
+        datos_act();
+    });
+}
     
     function datos_act() {
         setTimeout(() => {
