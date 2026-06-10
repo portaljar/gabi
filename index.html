@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Portal de Control de Riego</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c2c2c;
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ===== PANTALLA DE LOGIN ===== */
+        #loginScreen {
+            max-width: 380px;
+            width: 100%;
+            background-color: #3b3b3b;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        #loginScreen h1 {
+            color: #00bcd4;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        #loginScreen .subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+        .login-field {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .login-field label {
+            display: block;
+            font-size: 0.85rem;
+            color: #ccc;
+            margin-bottom: 6px;
+        }
+        .login-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #555;
+            border-radius: 10px;
+            background-color: #252525;
+            color: #f0f0f0;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .login-field input:focus { border-color: #00bcd4; }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #00bcd4;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover { background-color: #00acc1; }
+        .login-error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            min-height: 18px;
+        }
+
+        /* ===== PORTAL PRINCIPAL ===== */
+        #portalScreen { display: none; }
+        .portal-container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #3b3b3b;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+            text-align: center;
+            padding: 30px 20px 40px;
+            position: relative;
+        }
+        .help-button {
+            position: absolute;
+            top: 20px; right: 20px;
+            background-color: #9b59b6;
+            color: white;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: none;
+        }
+        .help-button:hover { background-color: #8e44ad; transform: scale(1.05); }
+        h1 {
+            color: #00bcd4; font-size: 2rem; margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .subtitle {
+            color: #cccccc; margin-bottom: 40px; font-size: 1rem;
+            border-bottom: 1px solid #555; display: inline-block; padding-bottom: 8px;
+        }
+        .options { display: flex; flex-direction: column; gap: 25px; margin-bottom: 40px; }
+        .riego-card {
+            background-color: #4a4a4a; border-radius: 16px; padding: 20px;
+            transition: all 0.3s ease; display: block; border: 1px solid #5a5a5a;
+            cursor: pointer; text-decoration: none; color: #f0f0f0;
+        }
+        .riego-card.offline { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.3); pointer-events: none; }
+        .riego-card.online:hover { transform: translateY(-5px); background-color: #555; border-color: #00bcd4; }
+        .riego-card h2 { font-size: 1.8rem; margin-bottom: 10px; color: #ffd700; }
+        .riego-card p { font-size: 0.9rem; color: #bbbbbb; }
+        .status-badge {
+            display: inline-block; margin-top: 15px; font-size: 0.8rem;
+            background-color: #2c2c2c; padding: 5px 12px; border-radius: 20px;
+        }
+        .status-badge.online { background-color: #2ecc71; color: #1a1a1a; }
+        .status-badge.offline { background-color: #e74c3c; color: white; }
+        .status-badge.checking { background-color: #f39c12; color: #1a1a1a; }
+        .footer-links { margin-top: 20px; font-size: 0.8rem; border-top: 1px solid #555; padding-top: 20px; }
+        .footer-links a { color: #00ffae; text-decoration: none; }
+
+        /* ===== MODAL DE AYUDA ===== */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: #3b3b3b; max-width: 800px; width: 95%;
+            border-radius: 20px; position: relative;
+            max-height: 85vh; overflow-y: auto;
+            border: 1px solid #00bcd4; padding: 0;
+        }
+        .modal-header {
+            position: sticky; top: 0;
+            background: linear-gradient(135deg, #1a5f3a 0%, #0d3b22 100%);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 25px; border-bottom: 1px solid #ffd700;
+            border-radius: 20px 20px 0 0; z-index: 5;
+        }
+        .modal-header h2 { color: #ffd700; display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.5rem; }
+        .close-modal {
+            background-color: #e74c3c; color: white; border: none;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .close-modal:hover { background-color: #c0392b; transform: scale(1.05); }
+        .manual-content { padding: 25px; color: #e0e0e0; }
+        .manual-content h2 { color: #ffd700; font-size: 1.6rem; border-left: 4px solid #ffd700; padding-left: 15px; margin: 25px 0 15px 0; }
+        .manual-content h2:first-of-type { margin-top: 0; }
+        .manual-content h3 { color: #00bcd4; font-size: 1.3rem; margin: 20px 0 12px 0; padding-left: 10px; border-left: 3px solid #ffd700; }
+        .manual-content p { font-size: 0.95rem; margin-bottom: 12px; line-height: 1.5; color: #ddd; }
+        .manual-content .table-container { overflow-x: auto; margin: 15px 0; }
+        .manual-content .table { width: 100%; border-collapse: collapse; background-color: #4a4a4a; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
+        .manual-content .table th { background-color: #1a5f3a; color: white; padding: 10px 8px; text-align: left; }
+        .manual-content .table td { padding: 8px; border-bottom: 1px solid #5a5a5a; color: #eee; }
+        .manual-content .steps { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        .manual-content .step { background-color: #4a4a4a; padding: 12px 15px; border-radius: 12px; display: flex; align-items: center; gap: 12px; }
+        .manual-content .step .number { background-color: #1a5f3a; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .manual-content .step .step-text { font-size: 0.9rem; }
+        .manual-content .tip, .manual-content .warning, .manual-content .danger { padding: 12px 15px; border-radius: 12px; margin: 15px 0; font-size: 0.9rem; }
+        .manual-content .tip { background-color: #2c5a2e; border-left: 4px solid #4caf50; }
+        .manual-content .tip strong { color: #81c784; }
+        .manual-content .warning { background-color: #5c4a2e; border-left: 4px solid #ff9800; }
+        .manual-content .warning strong { color: #ffb74d; }
+        .manual-content .danger { background-color: #5c2e2e; border-left: 4px solid #f44336; }
+        .manual-content .danger strong { color: #ef9a9a; }
+        .manual-content .code { background-color: #2c2c2c; color: #ffd700; padding: 12px; border-radius: 10px; font-family: monospace; font-size: 0.9rem; margin: 15px 0; text-align: center; word-break: break-all; }
+        .manual-content .code a { color: #ffd700; }
+        .manual-content .status-green, .manual-content .status-red, .manual-content .status-yellow { display: inline-block; padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+        .manual-content .status-green { background-color: #2ecc71; color: #1a1a1a; }
+        .manual-content .status-red { background-color: #e74c3c; color: white; }
+        .manual-content .status-yellow { background-color: #f39c12; color: #1a1a1a; }
+        .manual-content ul { margin: 10px 0 10px 20px; }
+        .manual-content li { margin: 5px 0; font-size: 0.9rem; }
+        .manual-content .indice { background-color: #4a4a4a; padding: 15px; border-radius: 12px; margin-bottom: 25px; }
+        .manual-content .indice h2 { margin-top: 0; border-left: none; padding-left: 0; }
+        .manual-content .indice-grid { display: flex; flex-direction: column; gap: 8px; }
+        .manual-content .indice a { color: #00bcd4; text-decoration: none; font-size: 0.9rem; padding: 5px 0; border-bottom: 1px solid #5a5a5a; }
+        .manual-content .indice a:hover { color: #ffd700; }
+        hr { border-color: #5a5a5a; margin: 20px 0; }
+
+        @media (min-width: 600px) {
+            .manual-content .indice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; }
+            .manual-content .steps { flex-direction: row; flex-wrap: wrap; }
+            .manual-content .step { flex: 1; min-width: 180px; flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .portal-container { padding: 20px 15px 30px; }
+            .riego-card h2 { font-size: 1.5rem; }
+            .help-button { width: 35px; height: 35px; font-size: 1.2rem; top: 15px; right: 15px; }
+            .manual-content { padding: 15px; }
+            .modal-header { padding: 15px 20px; }
+            .modal-header h2 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== PANTALLA DE LOGIN ===== -->
+    <div id="loginScreen">
+        <h1>🌱 Riego</h1>
+        <p class="subtitle">Acceso restringido</p>
+        <div class="login-field">
+            <label>Usuario</label>
+            <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
+        </div>
+        <div class="login-field">
+            <label>Contraseña</label>
+            <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+        </div>
+        <button class="login-btn" id="loginBtn">Entrar</button>
+        <div class="login-error" id="loginError"></div>
+    </div>
+
+    <!-- ===== PORTAL PRINCIPAL ===== -->
+    <div id="portalScreen">
+        <div class="portal-container">
+            <button class="help-button" id="helpButton">❔</button>
+            <h1><span>🌱</span> Control de Riego</h1>
+            <div class="subtitle">Selecciona el sistema a gestionar</div>
+            <div class="options">
+                <a href="riego1/index.html" class="riego-card" id="card1">
+                    <h2>💧 Zona de Riego 1</h2>
+                    <p>Jardín Principal | Maceteros</p>
+                    <div class="status-badge checking" id="status1">● Comprobando...</div>
+                </a>
+                <a href="riego2/index.html" class="riego-card" id="card2">
+                    <h2>💧 Zona de Riego 2</h2>
+                    <p>Huerta | Frutales</p>
+                    <div class="status-badge checking" id="status2">● Comprobando...</div>
+                </a>
+            </div>
+            <div class="footer-links">
+                <span>Portal de control unificado</span><br>
+                <a href="https://esp12.fun" target="_blank">esp12.fun</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE AYUDA ===== -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📖 MANUAL DE USUARIO</h2>
+                <button class="close-modal" id="closeModal">✕</button>
+            </div>
+            <div class="manual-content">
+                <div style="text-align:center; margin-bottom:25px;">
+                    <div style="font-size:3rem;">🌱💧</div>
+                    <h2 style="border-left:none; text-align:center;">SISTEMA DE RIEGO<br>AUTOMÁTICO</h2>
+                    <div style="font-size:0.9rem; color:#aaa;">Manual de usuario - Controla tu jardín desde cualquier lugar</div>
+                    <div style="font-size:0.7rem; color:#888; margin-top:8px;">Versión 2.0 | © 2026</div>
+                </div>
+                <div class="indice">
+                    <h2>📖 Índice</h2>
+                    <div class="indice-grid">
+                        <a href="#sec1">1. Primera configuración</a>
+                        <a href="#sec2">2. Control web local</a>
+                        <a href="#sec3">3. Control desde cualquier lugar</a>
+                        <a href="#sec4">4. Regar manualmente</a>
+                        <a href="#sec5">5. Riego automático</a>
+                        <a href="#sec6">6. Estado de las zonas</a>
+                        <a href="#sec7">7. Registro de actividad</a>
+                        <a href="#sec8">8. Solución de problemas</a>
+                        <a href="#sec9">9. Contacto</a>
+                    </div>
+                </div>
+                <div id="sec1">
+                    <h2>1️⃣ Primera configuración</h2>
+                    <p>La primera vez que enchufes los dispositivos, generará su propia red WiFi para configurarlo.</p>
+                    <h3>📡 Datos del dispositivo</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <tr><th>Red WiFi</th><td><strong>riego1</strong> (Zona 1) o <strong>riego2</strong> (Zona 2)</td></tr>
+                            <tr><th>Contraseña Wifi</th><td><strong>arduinoesp12</strong></td></tr>
+                            <tr><th>En el navegador</th><td><strong>riego1.local</strong> o <strong>riego2.local</strong></td></tr>
+                            <tr><th>Credenciales Web</th><td><strong>User: admin</strong> / <strong>contraseña: esp12</strong></td></tr>
+                        </table>
+                    </div>
+                    <div class="steps">
+                        <div class="step"><div class="number">1</div><div class="step-text">Enchufa el dispositivo</div></div>
+                        <div class="step"><div class="number">2</div><div class="step-text">Conéctate a la Wifi <strong>riego1 o riego2</strong></div></div>
+                        <div class="step"><div class="number">3</div><div class="step-text">En el navegador abre <strong>riego1.local</strong></div></div>
+                        <div class="step"><div class="number">4</div><div class="step-text">Ve a "Wifi" y escanear</div></div>
+                        <div class="step"><div class="number">5</div><div class="step-text">Selecciona tu WiFi y pon contraseña</div></div>
+                        <div class="step"><div class="number">6</div><div class="step-text">¡Listo! Se reiniciará</div></div>
+                    </div>
+                    <div class="warning"><strong>⚠️ Importante:</strong> Una vez configurado, los dispositivos ya no generarán la red riego1/riego2. Se conectará automáticamente a tu WiFi.</div>
+                </div>
+                <div id="sec2">
+                    <h2>2️⃣ Control web local</h2>
+                    <p>Cuando estés en casa, conectado a tu WiFi:</p>
+                    <div class="table-container">
+                        <table class="table">
+                            <tr><th>📍 Zona 1</th><td><strong>riego1.local</strong></td></tr>
+                            <tr><th>📍 Zona 2</th><td><strong>riego2.local</strong></td></tr>
+                            <tr><th>🔐 Usuario</th><td><strong>admin</strong></td></tr>
+                            <tr><th>🔑 Contraseña</th><td><strong>esp12</strong></td></tr>
+                        </table>
+                    </div>
+                    <div class="tip"><strong>💡 Tip:</strong> Guarda esta página en favoritos para acceder más rápido.</div>
+                </div>
+                <div id="sec3">
+                    <h2>3️⃣ Control desde cualquier lugar</h2>
+                    <p>🌍 Accede desde cualquier parte del mundo con tu usuario y contraseña.</p>
+                    <div class="warning"><strong>📡 Requisito:</strong> Los dispositivos deben tener conexión a internet.</div>
+                </div>
+                <div id="sec4">
+                    <h2>4️⃣ Regar manualmente</h2>
+                    <div class="steps">
+                        <div class="step"><div class="number">1</div><div class="step-text">Entra al panel</div></div>
+                        <div class="step"><div class="number">2</div><div class="step-text">Localiza tu zona</div></div>
+                        <div class="step"><div class="number">3</div><div class="step-text">🔴 Rojo = Apagado</div></div>
+                        <div class="step"><div class="number">4</div><div class="step-text">🟢 Verde = Regando</div></div>
+                        <div class="step"><div class="number">5</div><div class="step-text">Pulsa para encender/apagar</div></div>
+                    </div>
+                    <div class="tip"><strong>💡 Tip:</strong> No olvides apagar el riego manual cuando termine.</div>
+                </div>
+                <div id="sec5">
+                    <h2>5️⃣ Programar riego automático</h2>
+                    <div class="danger"><strong>⚠️ Importante:</strong> Si el reloj no está en hora pulsa <strong>"Act Reloj"</strong> para que se sincronice.</div>
+                    <div class="steps">
+                        <div class="step"><div class="number">1</div><div class="step-text">Pulsa <strong>"Tempo"</strong></div></div>
+                        <div class="step"><div class="number">2</div><div class="step-text">Configura ON / OFF / Días</div></div>
+                        <div class="step"><div class="number">3</div><div class="step-text">Pulsa <strong>"Guardar"</strong></div></div>
+                        <div class="step"><div class="number">4</div><div class="step-text">Verifica que "Tempo" esté en ON (verde)</div></div>
+                    </div>
+                    <div class="danger"><strong>⚠️ Importante:</strong> El temporizador debe estar en <strong>ON (verde)</strong> para que funcione.</div>
+                </div>
+                <div id="sec6">
+                    <h2>6️⃣ Estado de las zonas</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <tr><td><span class="status-green">● Online</span></td><td>Zona disponible</td></tr>
+                            <tr><td><span class="status-red">● Offline</span></td><td>Zona desconectada</td></tr>
+                            <tr><td><span class="status-yellow">● Comprobando</span></td><td>Espera unos segundos</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="sec7">
+                    <h2>7️⃣ Registro de actividad (Log)</h2>
+                    <div class="steps">
+                        <div class="step"><div class="number">1</div><div class="step-text">Pulsa <strong>"Log"</strong></div></div>
+                        <div class="step"><div class="number">2</div><div class="step-text">Verás el historial</div></div>
+                        <div class="step"><div class="number">3</div><div class="step-text">Pulsa <strong>"Borrar Log"</strong> para limpiar</div></div>
+                    </div>
+                </div>
+                <div id="sec8">
+                    <h2>8️⃣ Solución de problemas</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <tr><th>Problema</th><th>Solución</th></tr>
+                            <tr><td>No veo la wifi riego1/riego2</td><td>Espera 1 minuto después de enchufar</td></tr>
+                            <tr><td>No puedo entrar al panel</td><td>Usuario: <strong>admin</strong> / Contraseña: <strong>esp12</strong></td></tr>
+                            <tr><td>El temporizador no riega</td><td>Verifica que "Tempo" esté en VERDE</td></tr>
+                            <tr><td>Zona en rojo</td><td>Revisa que el dispositivo esté encendido</td></tr>
+                        </table>
+                    </div>
+                    <div class="tip"><strong>🔄 Si todo falla:</strong> Reinicia el dispositivo (desenchufa y enchufa). Espera 2 minutos.</div>
+                </div>
+                <div id="sec9">
+                    <h2>9️⃣ Contacto</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <tr><th>📧 Email</th><td><a href="mailto:portaljar@gmail.com" style="color:#00bcd4;">portaljar@gmail.com</a></td></tr>
+                            <tr><th>🌐 Web</th><td><a href="https://esp12.fun" target="_blank" style="color:#00bcd4;">esp12.fun</a></td></tr>
+                        </table>
+                    </div>
+                </div>
+                <hr>
+                <div style="text-align:center; font-size:0.7rem; color:#888; margin-top:15px;">
+                    🌱 Sistema de Riego Automático - Manual de usuario Versión 2.0
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 🔐 CREDENCIALES — cambia aquí usuario y contraseña
+        // ============================================================
+        const USUARIO = "admin";
+        const PASSWORD = "esp12";
+        // ============================================================
+
+        const SESSION_KEY = "riego_auth";
+
+        // Comprobar si ya hay sesión
+        function isLoggedIn() {
+            return sessionStorage.getItem(SESSION_KEY) === "ok";
+        }
+
+        function showPortal() {
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("portalScreen").style.display = "block";
+            checkAllDevices();
+            setInterval(checkAllDevices, 45000);
+        }
+
+        function showLogin() {
+            document.getElementById("loginScreen").style.display = "block";
+            document.getElementById("portalScreen").style.display = "none";
+        }
+
+        // Login
+        function doLogin() {
+            const user = document.getElementById("loginUser").value.trim();
+            const pass = document.getElementById("loginPass").value;
+            const errorDiv = document.getElementById("loginError");
+
+            if (user === USUARIO && pass === PASSWORD) {
+                sessionStorage.setItem(SESSION_KEY, "ok");
+                errorDiv.textContent = "";
+                showPortal();
+            } else {
+                errorDiv.textContent = "Usuario o contraseña incorrectos.";
+                document.getElementById("loginPass").value = "";
+            }
+        }
+
+        document.getElementById("loginBtn").addEventListener("click", doLogin);
+        document.getElementById("loginPass").addEventListener("keydown", e => {
+            if (e.key === "Enter") doLogin();
+        });
+        document.getElementById("loginUser").addEventListener("keydown", e => {
+            if (e.key === "Enter") document.getElementById("loginPass").focus();
+        });
+
+        // Arranque
+        if (isLoggedIn()) {
+            showPortal();
+        } else {
+            showLogin();
+        }
+
+        // ===== ESTADO DE ZONAS =====
+        const GOOGLE_URL_1 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1";
+        const GOOGLE_URL_2 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2";
+
+        const zonas = [
+            { url: GOOGLE_URL_1, cardId: "card1", statusId: "status1", href: "riego1/index.html" },
+            { url: GOOGLE_URL_2, cardId: "card2", statusId: "status2", href: "riego2/index.html" }
+        ];
+
+        async function checkDeviceStatus(zona) {
+            const card = document.getElementById(zona.cardId);
+            const statusEl = document.getElementById(zona.statusId);
+            statusEl.innerHTML = "● Comprobando...";
+            statusEl.className = "status-badge checking";
+
+            try {
+                const res = await fetch(zona.url, { signal: AbortSignal.timeout(5000) });
+                const data = await res.json();
+                const ahora = Math.floor(Date.now() / 1000);
+                const online = data.time && (ahora - data.time) < 210;
+
+                if (online) {
+                    statusEl.innerHTML = "● Online";
+                    statusEl.className = "status-badge online";
+                    card.classList.remove("offline");
+                    card.classList.add("online");
+                    card.href = zona.href;
+                } else {
+                    throw new Error("offline");
+                }
+            } catch {
+                statusEl.innerHTML = "● Offline";
+                statusEl.className = "status-badge offline";
+                card.classList.add("offline");
+                card.classList.remove("online");
+                card.href = "javascript:void(0);";
+            }
+        }
+
+        async function checkAllDevices() {
+            for (const zona of zonas) await checkDeviceStatus(zona);
+        }
+
+        // ===== MODAL =====
+        const modal = document.getElementById("helpModal");
+        document.getElementById("helpButton").addEventListener("click", () => modal.style.display = "flex");
+        document.getElementById("closeModal").addEventListener("click", () => modal.style.display = "none");
+        window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+    </script>
+</body>
+</html>
