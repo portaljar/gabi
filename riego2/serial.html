@@ -24,11 +24,8 @@
 			const output = document.getElementById('serialOutput');
 			output.textContent = acState.out_print;
 			output.scrollTop = output.scrollHeight;
-		} catch (error) {
-			console.error('Error cargando configuración:', error);
-			const output = document.getElementById('serialOutput');
-			output.textContent = 'Error al cargar datos: ' + error.message;
-      }
+		})
+    .catch(err => console.error("Error al cargar texto plano:", err));
     }
     
     cargarDatos();
