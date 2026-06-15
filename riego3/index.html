@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Riego</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 50vh;
+            background-color: #2c2c2c;
+            color: #f0f0f0;
+            margin: 0;
+            height: 90%;
+        }
+        .container {
+            background-color: #3b3b3b;
+            padding: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 100%;
+            flex: 1;
+        }
+        h1 {
+            color: #00bcd4;
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            background-color: #4a4a4a;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            justify-content: center;
+            flex-wrap: nowrap;  /* ← Esto evita que se apilen */
+        }
+        label {
+            font-weight: bold;
+            color: #cccccc;
+            font-size: 1.1rem;
+        }
+        button {
+            padding: 18px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .display {
+            background: rgba(30,30,40,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00bcd4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #555;
+            margin: 10px 0;
+        }
+        .status-message {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+            min-height: 20px;
+        }
+        .contenedor {
+            background-color: #4a4a4a;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .contenedor table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .contenedor th {
+            padding: 5px 0;
+        }
+        .contenedor .input-time {
+            width: calc(100% - 30px);
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background-color: #252525;
+            color: #f0f0f0;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contenedor .input-time:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+        }
+        .contenedor .day-checkboxes {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .contenedor .day-checkboxes input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .contenedor .day-checkboxes input[type="checkbox"] + label {
+            background-color: #6c757d;
+            color: white;
+            padding: 6px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.85rem;
+            min-width: 17px;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .contenedor .day-checkboxes input[type="checkbox"]:checked + label {
+            background-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.5);
+        }
+        .zona-temporizador {
+            background-color: #3a3a3a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #4a4a4a;
+        }
+        .zona-temporizador h3 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        .botones-zonas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .boton-zona {
+            min-width: 100px;
+        }
+        /* Para pantallas muy pequeñas (menos de 400px) */
+        @media (max-width: 400px) {
+            .control-group {
+                gap: 5px;
+                padding: 8px;
+            }
+            
+            .control-group label {
+                font-size: 0.8rem;
+            }
+            
+            .input-time {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+                width: auto;
+                min-width: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="display">
+        <div style="font-size: 1.1rem; margin-bottom: 10px; color: #f0f0f0;">
+            <h1>🌱 Control de riego</h1>
+        </div>
+        <div style="display: flex; justify-content: space-around; width: 100%;">
+            <span class="status-message" id="statusMessage"></span>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Panel TEMPORIZADOR (generado dinámicamente) -->
+    <div class="contenedor" id="confi_temp" style="display:none;">
+        <h2>⏰ Programación de Riego</h2>
+        <div id="zonas-temp-container"></div>
+        <div class="control-group">
+            <button id="TimerToggleButton">-----</button>
+            <button style="background-color:#9b59b6;" id="saveTempBtn">Guardar</button>
+        </div>
+        <div class="control-group">
+            <button style="background-color:#9b59b6;" id="closeTempBtn">Salir</button>
+        </div>
+    </div>
+
+    <!-- Panel LOG -->
+    <div class="contenedor" id="confi_log" style="display:none;">
+        <h2>📋 Registro Log</h2>
+        <div class="control-group">
+            <div id="log" style="background:#2c2c2c; padding:12px; border-radius:8px; width:95%; max-height:300px; overflow:auto; font-family:monospace; font-size:0.8rem;">...</div>
+        </div>
+        <div class="control-group">
+            <button style="background-color:#9b59b6;" id="clearLogBtn">Borrar Log</button>
+            <button style="background-color:#9b59b6;" id="closeLogBtn">Salir</button>
+        </div>
+    </div>
+
+    <!-- BOTONES PRINCIPALES DE ZONAS (generados dinámicamente) -->
+    <div id="control_buton" class="contenedor">
+        <div id="botones-zonas-container" class="botones-zonas"></div>
+        <div class="control-group">
+            <button style="background-color:#9b59b6;" id="showTempBtn">Tempo</button>
+            <button style="background-color:#9b59b6;" id="showLogBtn">Log</button>
+        </div>
+    </div>
+</div>
+
+<footer style="text-align: center; padding: 1rem; background-color: #2c2c2c; font-size: 0.9rem; line-height: 1.6;">
+    <p>
+        <span id="web">Version Web_2.0</span><br>
+        <span id="pie">Versión del proyecto</span><br>
+        Sitio web: <a href="https://esp12.fun" target="_blank" style="color: #00ffae; text-decoration: none;">esp12.fun</a><br>
+        Contacto: <a href="mailto:portaljar@gmail.com" style="color: #00ffae; text-decoration: none;">portaljar@gmail.com</a><br>
+    </p>
+</footer>
+
+<script>
+
+    // ===== COMPROBACIÓN DE SESIÓN =====
+    if (sessionStorage.getItem("riego_auth") !== "ok") {
+        window.location.href = "../index.html";
+    }
+    // ===================================
+
+    // ==================== CONFIGURACIÓN DINÁMICA ====================
+    const NUM_ZONES = 4;  // 👈 CAMBIA AQUÍ EL NÚMERO DE ZONAS (ej: 4, 6, 8...)
+    // ===============================================================
+    
+    // Estado global
+    let acState = {
+        //rele: {},
+        tempo_zones: {},
+        b_tempo: false,
+        reloj: "00:00:00",
+        out_server: "Listo",
+        pie: `Sistema con ${NUM_ZONES} zonas`,
+        time: 0
+    };
+    
+    const diccionarioEventos = {
+        0: "Reinicio",
+        1: "Zona 1 ON",
+        2: "Zona 2 ON",
+        3: "Zona 3 ON",
+        4: "Zona 4 ON",
+        5: "Zona 5 ON",
+        6: "Zona 6 ON",
+        7: "Zona 1 OFF",
+        8: "Zona 2 OFF",
+        9: "Zona 3 OFF",
+        10: "Zona 4 OFF",
+        11: "Zona 5 OFF",
+        12: "Zona 6 OFF",
+        13: "Log borrado"
+    };
+    
+    let tempo_old = "";
+    let log_state = true;
+    let panelAbierto = false;
+    let timerInterval = null;
+    let b_conexion = true;
+    let sen_tem = {};
+    let act_web =4500;
+    const statusMessage = document.getElementById('statusMessage');
+    
+    // Inicializar estructuras según NUM_ZONES
+    function initState() {
+        for (let i = 1; i <= NUM_ZONES; i++) {
+            //if (acState.rele[i] === undefined) acState.rele[i] = false;
+            if (acState.tempo_zones[i] === undefined) {
+                acState.tempo_zones[i] = { conf: [0,0,0,0,0,0,0, "00:00", "00:00"] };
+            }
+        }
+    }
+    
+    // Generar dinámicamente los botones de zona
+    function generarBotonesZonas() {
+        const container = document.getElementById('botones-zonas-container');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        // Crear filas de 2 botones
+        for (let i = 1; i <= NUM_ZONES; i ++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'control-group';
+            rowDiv.style.gap = '10px';
+            
+            // Primer botón de la fila
+            const btn1 = document.createElement('button');
+            btn1.textContent = `Zona ${i}`;
+            btn1.id = `boton_${i}`;
+            btn1.style.backgroundColor = 'gray';
+            //btn1.style.backgroundColor = acState.rele[i] ? 'red' : 'lime';
+            btn1.style.flex = '1';
+            btn1.addEventListener('click', (function(zone) {
+                return function() { send_data(zone); };
+            })(i));
+            rowDiv.appendChild(btn1);
+            
+            
+            
+            container.appendChild(rowDiv);
+        }
+    }
+    
+    // Generar paneles de temporizador
+    function generarPanelesTemporizador() {
+        const container = document.getElementById('zonas-temp-container');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        for (let zone = 1; zone <= NUM_ZONES; zone++) {
+            const confData = acState.tempo_zones[zone]?.conf || [0,0,0,0,0,0,0, "00:00", "00:00"];
+            const zoneDiv = document.createElement('div');
+            zoneDiv.className = 'zona-temporizador';
+            zoneDiv.innerHTML = `
+                <h3>💧 Zona ${zone}</h3>
+                <div class="control-group">
+                    <label>ON:</label>
+                    <input type="time" class="input-time start-time" data-zone="${zone}" value="${confData[7] || "00:00"}">
+                    <label>OFF:</label>
+                    <input type="time" class="input-time end-time" data-zone="${zone}" value="${confData[8] || "00:00"}">
+                </div>
+                <div class="day-checkboxes" data-zone="${zone}">
+                    ${generarCheckboxesDias(zone, confData.slice(0,7))}
+                </div>
+            `;
+            container.appendChild(zoneDiv);
+        }
+        
+        // Event listeners
+        document.querySelectorAll('.start-time, .end-time').forEach(el => {
+            el.addEventListener('change', () => actualizarDatosTemporales());
+        });
+        document.querySelectorAll('.day-checkboxes input').forEach(cb => {
+            cb.addEventListener('change', () => actualizarDatosTemporales());
+        });
+    }
+    
+    function generarCheckboxesDias(zone, diasActivos) {
+        const dias = ["lu", "ma", "mi", "ju", "vi", "sa", "do"];
+        let html = '';
+        dias.forEach((dia, idx) => {
+            const checked = (diasActivos[idx] === 1) ? 'checked' : '';
+            html += `
+                <input type="checkbox" id="day_${dia}${zone}" class="check-day" data-zone="${zone}" ${checked}>
+                <label for="day_${dia}${zone}">${dia.charAt(0).toUpperCase() + dia.slice(1)}</label>
+            `;
+        });
+        return html;
+    }
+    
+    function actualizarDatosTemporales() {
+        for (let zone = 1; zone <= NUM_ZONES; zone++) {
+            const startInput = document.querySelector(`.start-time[data-zone="${zone}"]`);
+            const endInput = document.querySelector(`.end-time[data-zone="${zone}"]`);
+            if (!startInput || !endInput) continue;
+            
+            const dias = ["lu", "ma", "mi", "ju", "vi", "sa", "do"];
+            const diasArray = dias.map(dia => {
+                const cb = document.getElementById(`day_${dia}${zone}`);
+                return cb && cb.checked ? 1 : 0;
+            });
+            
+            sen_tem[zone] = { conf: [...diasArray, startInput.value, endInput.value] };
+        }
+        console.log("Temporizadores actualizados:", sen_tem);
+    }
+    
+    function updateAlarmDisplay(confStringData, zoneNum) {
+        const startTimeInput = document.querySelector(`.start-time[data-zone="${zoneNum}"]`);
+        const endTimeInput = document.querySelector(`.end-time[data-zone="${zoneNum}"]`);
+        if (startTimeInput) startTimeInput.value = confStringData[7];
+        if (endTimeInput) endTimeInput.value = confStringData[8];
+        
+        const dias = ["lu", "ma", "mi", "ju", "vi", "sa", "do"];
+        dias.forEach((dia, index) => {
+            const cb = document.getElementById(`day_${dia}${zoneNum}`);
+            if (cb) cb.checked = confStringData[index] === 1;
+        });
+    }
+    
+async function load_datos() {
+    if (panelAbierto) return;
+    if (statusMessage) {
+        statusMessage.innerText = 'Actualizando...';
+        statusMessage.style.color = '#f1c40f';
+    }
+    
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3')
+    .then(response => response.text()) // 👈 Lo tratamos como texto string puro
+    .then(textData => {
+        // Convertimos el String crudo de la hoja de Google en el objeto acState
+        acState = JSON.parse(textData);
+        console.log("JSON interpretado:", acState);
+        
+        // Tu lógica de verificación de tiempo de conexión con el ESP
+        if ((acState.time + 210) < (Date.now() / 1000)) {
+            b_conexion = false;
+            statusMessage.innerText = "Conectando con el dispositivo";
+            statusMessage.style.color = '#e74c3c';
+            generarBotonesZonas();
+            act_web = 4500;
+            return;
+        }
+        
+        act_web = 15000;
+        b_conexion = true;
+        datos_act();
+        statusMessage.innerText = acState.reloj;
+        statusMessage.style.color = '#2ecc71';
+    })
+    .catch(err => console.error("Error al cargar texto plano:", err));
+}
+    
+async function save_datos() {
+    console.log('Enviado acState:', acState);
+    if (statusMessage) {
+        statusMessage.innerText = 'Actualizando...';
+        statusMessage.style.color = '#f1c40f';
+    }
+    
+    // Convertimos TODO el objeto acState a un String plano
+    const jsonString = JSON.stringify(acState);
+    
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' }, // 👈 Le mentimos al navegador para evitar CORS
+        body: jsonString // Enviamos el String puro
+    })
+    .then(response => response.text()) // 👈 Recibimos la respuesta como texto plano primero
+    .then(textData => {
+        // Convertimos el texto de respuesta a JSON para leerlo en JS
+        const data = JSON.parse(textData);
+        if (statusMessage) {
+            statusMessage.innerText = acState.out_server;
+            statusMessage.style.color = '#2ecc71';
+        }
+        console.log('✅ Configuración guardada:', data);
+        datos_act();  
+    })
+    .catch(error => {
+        console.error('❌ Error o redirección de Google:', error);
+        // Google Apps Script a veces procesa todo bien pero da un error estético de fetch.
+        // Forzamos la actualización para que el usuario no vea que falló si se guardó.
+        if (statusMessage) {
+            statusMessage.innerText = acState.out_server || "Actualizado";
+            statusMessage.style.color = '#2ecc71';
+        }
+        datos_act();
+    });
+}
+    
+    function datos_act() {
+        setTimeout(() => {
+            if (statusMessage && !panelAbierto) statusMessage.innerText = acState.reloj;
+        }, 10000);
+        
+        if (log_state) log_fun();
+        
+        const newTempoJSON = JSON.stringify(acState.tempo_zones);
+        if (newTempoJSON !== tempo_old) {
+            tempo_old = newTempoJSON;
+            for (let i = 1; i <= NUM_ZONES; i++) {
+                if (acState.tempo_zones[i]) {
+                    updateAlarmDisplay(acState.tempo_zones[i].conf, i);
+                }
+            }
+        }
+        
+        for (let i = 1; i <= NUM_ZONES; i++) {
+            const btn = document.getElementById(`boton_${i}`);
+            if (btn) {
+                btn.style.backgroundColor = acState.rele[i] === 1 ? 'red' : 'lime';
+               // btn.style.backgroundColor = acState.rele[i] ? 'red' : 'lime';
+            }
+        }
+        
+        const timerButton = document.getElementById('TimerToggleButton');
+        if (timerButton) {
+            timerButton.innerText = `Tempo ${acState.b_tempo ? 'ON' : 'OFF'}`;
+            timerButton.style.backgroundColor = acState.b_tempo ? '#2ecc71' : '#e74c3c';
+        }
+        
+        const pieSpan = document.getElementById('pie');
+        if (pieSpan) pieSpan.innerHTML = acState.pie || `Sistema con ${NUM_ZONES} zonas`;
+    }
+    
+    function log_fun() {
+        const logContainer = document.getElementById("log");
+        if (!logContainer) return;
+        
+        logContainer.innerHTML = '';
+        
+        if (acState.log && acState.log.length > 0) {
+            // Recorremos en orden para que mantenga la estructura del ESP12
+            for (let i = 0; i < acState.log.length; i++) {
+                const linea = acState.log[i].trim();
+                
+                // 1. ¿Es un encabezado de día? (Empieza por #)
+                if (linea.startsWith("#")) {
+                    const diaTexto = linea.substring(1); // Quitamos el '#'
+                    
+                    const encabezadoDia = document.createElement('div');
+                    encabezadoDia.style.backgroundColor = '#4a4a5a';
+                    encabezadoDia.style.color = '#ffffff';
+                    encabezadoDia.style.padding = '6px 12px';
+                    encabezadoDia.style.marginTop = '12px';
+                    encabezadoDia.style.borderRadius = '4px';
+                    encabezadoDia.style.fontWeight = 'bold';
+                    encabezadoDia.style.fontSize = '0.95em';
+                    encabezadoDia.textContent = "📅  " + diaTexto;
+                    logContainer.appendChild(encabezadoDia);
+                    continue; // Pasamos al siguiente elemento del array
+                }
+				
+				let partes = linea.split("-"); // "3" y "21:10"
+				let codigoEvento = parseInt(partes[0]);
+				let horaSeparada = partes[1];
+
+				// Traducimos el código a texto legible
+				let textoEvento = diccionarioEventos[codigoEvento] || "Evento desconocido";
+				
+				
+
+                const filaEvento = document.createElement('div');
+                
+                // 🔴 MODIFICADO: Separación de los bordes (arriba/abajo 8px, izquierda/derecha 12px)
+                filaEvento.style.padding = '4px 10px';
+                filaEvento.style.borderBottom = '1px solid #333333';
+                filaEvento.style.fontSize = '0.9em';
+                
+                // 🔴 NUEVO: Alternar el fondo suavemente según si la línea es par o impar
+                // i % 2 === 0 detecta las líneas pares
+                if (i % 2 === 0) {
+                    filaEvento.style.backgroundColor = 'rgba(255, 255, 255, 0.10)'; // Un blanco casi invisible, fondo muy suave
+                } else {
+                    filaEvento.style.backgroundColor = 'transparent';
+                }
+                
+                // Tu estructura HTML con los flotantes left y right
+                filaEvento.innerHTML = `
+                    <span style="color: #f0f0f0; float: left;">Evento: ${textoEvento}</span>
+                    <span style="color: #aaa; float: right; font-family: monospace;">${horaSeparada} Horas</span>
+                    <div style="clear: both;"></div>
+                `;
+                
+                
+                
+                logContainer.appendChild(filaEvento);
+            }
+        } else {
+            logContainer.innerHTML = '<div style="color: #888; text-align: center; padding: 20px;">No hay eventos registrados</div>';
+        }
+    }
+    
+    // Envío de comandos (casos)
+    
+    
+    function send_data(case_num) {
+        if (!b_conexion) {
+            statusMessage.innerText = "⚠️ Sin conexión con el dispositivo. No se puede acceder.";
+            statusMessage.style.color = '#e74c3c';
+            return;
+		}
+        acState.case_sen = case_num;
+        
+        switch(case_num) {
+            case 7: // Borrar Log
+                if (acState.log) {
+                    acState.log = []; // Vaciamos el array en el navegador localmente
+                }
+                if (document.getElementById('log')) {
+                    document.getElementById('log').innerHTML = '<div style="color: #888; text-align: center; padding: 20px;">No hay eventos registrados en el historial</div>';
+                }
+                acState.out_server = "Log borrado OK";
+                break;
+            case 8: // Actualizar Temporizador
+                acState.tempo_zones = sen_tem;
+                acState.out_server = "Temporizador actualizado OK";
+                break;
+            case 9: // TEMPO ON/OFF
+                acState.b_tempo = !acState.b_tempo;
+                acState.out_server = "Temporizador actualizado OK";
+                break;
+            case 10: // Act. reloj
+                var d = new Date();
+                acState.time = parseInt(d.valueOf() / 1000);
+                break;
+            default:
+                if (case_num >= 1 && case_num <= NUM_ZONES) {
+                    acState.rele[case_num] = acState.rele[case_num] === 1 ? 0 : 1;
+                    //acState.rele[case_num] = !acState.rele[case_num];
+                    acState.out_server = "Zona " + String(case_num) + " actualizada OK";
+                }
+                break;
+        }
+        
+        if (case_num != 13) save_datos();
+    }
+    
+    function input_out() {
+        actualizarDatosTemporales();
+        acState.tempo_zones = sen_tem;
+        send_data(8);
+    }
+    
+    // Panel toggle
+    function togglePanel(panelId) {
+    // 🔴 NUEVO: Si no hay conexión con ESP12, no permitir abrir paneles
+    if (!b_conexion && (panelId === 'confi_temp' || panelId === 'confi_log')) {
+        statusMessage.innerText = "⚠️ Sin conexión con el dispositivo. No se puede acceder.";
+        statusMessage.style.color = '#e74c3c';
+        return;  // Sale sin abrir el panel
+    }
+    
+    const panel = document.getElementById(panelId);
+    const mainButtons = document.getElementById('control_buton');
+    if (panel) {
+        const isVisible = panel.style.display !== 'none';
+        
+        if (isVisible) {
+            panel.style.display = 'none';
+            const otrosPaneles = document.querySelectorAll('#confi_temp, #confi_log');
+            let algunAbierto = false;
+            otrosPaneles.forEach(p => {
+                if (p.style.display !== 'none') algunAbierto = true;
+            });
+            panelAbierto = algunAbierto;
+            if (mainButtons && !panelAbierto) mainButtons.style.display = '';
+        } else {
+            document.querySelectorAll('#confi_temp, #confi_log').forEach(p => {
+                p.style.display = 'none';
+            });
+            panel.style.display = '';
+            panelAbierto = true;
+            if (mainButtons) mainButtons.style.display = 'none';
+            
+            if (panelId === 'confi_temp') {
+                generarPanelesTemporizador();
+            }
+            if (panelId === 'confi_log') {
+                log_state = true;
+                log_fun();
+            }
+        }
+    }
+}
+    
+    // Inicialización
+    function initUI() {
+        initState();
+        generarBotonesZonas();
+        generarPanelesTemporizador();
+        
+        document.getElementById('showTempBtn')?.addEventListener('click', () => togglePanel('confi_temp'));
+        document.getElementById('showLogBtn')?.addEventListener('click', () => togglePanel('confi_log'));
+        document.getElementById('closeTempBtn')?.addEventListener('click', () => togglePanel('confi_temp'));
+        document.getElementById('closeLogBtn')?.addEventListener('click', () => togglePanel('confi_log'));
+        document.getElementById('TimerToggleButton')?.addEventListener('click', () => send_data(9));
+        document.getElementById('saveTempBtn')?.addEventListener('click', () => input_out());
+        document.getElementById('clearLogBtn')?.addEventListener('click', () => send_data(7));
+        
+        load_datos();
+       // setInterval(() => {
+            //if (!panelAbierto) load_datos();
+        //}, 10000);
+    }
+    function loop_datos() {
+        if (!panelAbierto) load_datos();
+        setTimeout(loop_datos, act_web);  // ← cada vez usa el valor actual
+	}
+
+loop_datos();  // ← inicia el bucle
+    document.addEventListener('DOMContentLoaded', initUI);
+</script>
+</body>
+</html>

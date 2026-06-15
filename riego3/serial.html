@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitor Serie ESP12F</title>
+  <style>
+    body { font-family: Arial; background: #f0f0f0; padding: 20px; }
+    #serialOutput { background: black; color: lime; padding: 10px; height: 500px; overflow-y: scroll; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Monitor Serie ESP12F</h1>
+  <div id="serialOutput">Esperando datos...</div>
+
+  <script>
+    // Solución 1: Envolver en una función async
+    async function cargarDatos() {
+      fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2')
+		.then(response => response.text()) // 👈 Lo tratamos como texto string puro
+		.then(textData => {
+			// Convertimos el String crudo de la hoja de Google en el objeto acState
+			acState = JSON.parse(textData);
+			console.log("JSON interpretado:", acState);
+			
+			const output = document.getElementById('serialOutput');
+			output.textContent = acState.out_print;
+			output.scrollTop = output.scrollHeight;
+		})
+    .catch(err => console.error("Error al cargar texto plano:", err));
+    }
+    
+    cargarDatos();
+  </script>
+</body>
+</html>
