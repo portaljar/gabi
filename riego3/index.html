@@ -468,7 +468,7 @@ async function save_datos() {
     // Convertimos TODO el objeto acState a un String plano
     const jsonString = JSON.stringify(acState);
     
-    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2', {
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' }, // 👈 Le mentimos al navegador para evitar CORS
         body: jsonString // Enviamos el String puro
