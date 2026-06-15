@@ -217,7 +217,6 @@
 </head>
 <body>
 
-    <!-- ===== PANTALLA DE LOGIN ===== -->
     <div id="loginScreen">
         <h1>🌱 Riego</h1>
         <p class="subtitle">Acceso restringido</p>
@@ -233,7 +232,6 @@
         <div class="login-error" id="loginError"></div>
     </div>
 
-    <!-- ===== PORTAL PRINCIPAL ===== -->
     <div id="portalScreen">
         <div class="portal-container">
             <button class="help-button" id="helpButton">❔</button>
@@ -242,7 +240,7 @@
             <div class="options">
                 <a href="riego1/index.html" class="riego-card" id="card1">
                     <h2>💧 Zona de Riego 1</h2>
-                    <p>Piscina | Huerta</p>
+                    <p>Jardín Principal | Maceteros</p>
                     <div class="status-badge checking" id="status1">● Comprobando...</div>
                 </a>
                 <a href="riego2/index.html" class="riego-card" id="card2">
@@ -250,20 +248,19 @@
                     <p>Huerta | Frutales</p>
                     <div class="status-badge checking" id="status2">● Comprobando...</div>
                 </a>
-				<a href="riego3/index.html" class="riego-card" id="card3">
+                <a href="riego3/index.html" class="riego-card" id="card3">
                     <h2>💧 Zona de Riego 3</h2>
-                    <p>Huerta | Frutales</p>
-                    <div class="status-badge checking" id="status2">● Comprobando...</div>
+                    <p>Sistema Auxiliar | Google Script</p>
+                    <div class="status-badge checking" id="status3">● Comprobando...</div>
                 </a>
             </div>
             <div class="footer-links">
-                <span>Control de riego unificado</span><br>
+                <span>Portal de control unificado</span><br>
                 <a href="https://esp12.fun" target="_blank">esp12.fun</a>
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL DE AYUDA ===== -->
     <div id="helpModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -297,21 +294,21 @@
                     <h3>📡 Datos del dispositivo</h3>
                     <div class="table-container">
                         <table class="table">
-                            <tr><th>Red WiFi</th><td><strong>riego1</strong> (Zona 1) o <strong>riego2</strong> (Zona 2)</td></tr>
+                            <tr><th>Red WiFi</th><td><strong>riego1</strong> (Zona 1), <strong>riego2</strong> (Zona 2) o <strong>riego3</strong> (Zona 3)</td></tr>
                             <tr><th>Contraseña Wifi</th><td><strong>arduinoesp12</strong></td></tr>
-                            <tr><th>En el navegador</th><td><strong>riego1.local</strong> o <strong>riego2.local</strong></td></tr>
+                            <tr><th>En el navegador</th><td><strong>riego1.local</strong>, <strong>riego2.local</strong> o <strong>riego3.local</strong></td></tr>
                             <tr><th>Credenciales Web</th><td><strong>User: admin</strong> / <strong>contraseña: esp12</strong></td></tr>
                         </table>
                     </div>
                     <div class="steps">
                         <div class="step"><div class="number">1</div><div class="step-text">Enchufa el dispositivo</div></div>
-                        <div class="step"><div class="number">2</div><div class="step-text">Conéctate a la Wifi <strong>riego1 o riego2</strong></div></div>
-                        <div class="step"><div class="number">3</div><div class="step-text">En el navegador abre <strong>riego1.local</strong></div></div>
+                        <div class="step"><div class="number">2</div><div class="step-text">Conéctate a la Wifi <strong>riegoX</strong></div></div>
+                        <div class="step"><div class="number">3</div><div class="step-text">En el navegador abre <strong>riegoX.local</strong></div></div>
                         <div class="step"><div class="number">4</div><div class="step-text">Ve a "Wifi" y escanear</div></div>
                         <div class="step"><div class="number">5</div><div class="step-text">Selecciona tu WiFi y pon contraseña</div></div>
                         <div class="step"><div class="number">6</div><div class="step-text">¡Listo! Se reiniciará</div></div>
                     </div>
-                    <div class="warning"><strong>⚠️ Importante:</strong> Una vez configurado, los dispositivos ya no generarán la red riego1/riego2. Se conectará automáticamente a tu WiFi.</div>
+                    <div class="warning"><strong>⚠️ Importante:</strong> Una vez configurado, los dispositivos ya no generarán la red riego1/riego2/riego3. Se conectará automáticamente a tu WiFi.</div>
                 </div>
                 <div id="sec2">
                     <h2>2️⃣ Control web local</h2>
@@ -320,6 +317,7 @@
                         <table class="table">
                             <tr><th>📍 Zona 1</th><td><strong>riego1.local</strong></td></tr>
                             <tr><th>📍 Zona 2</th><td><strong>riego2.local</strong></td></tr>
+                            <tr><th>📍 Zona 3</th><td><strong>riego3.local</strong></td></tr>
                             <tr><th>🔐 Usuario</th><td><strong>admin</strong></td></tr>
                             <tr><th>🔑 Contraseña</th><td><strong>esp12</strong></td></tr>
                         </table>
@@ -376,7 +374,7 @@
                     <div class="table-container">
                         <table class="table">
                             <tr><th>Problema</th><th>Solución</th></tr>
-                            <tr><td>No veo la wifi riego1/riego2</td><td>Espera 1 minuto después de enchufar</td></tr>
+                            <tr><td>No veo la wifi riego</td><td>Espera 1 minuto después de enchufar</td></tr>
                             <tr><td>No puedo entrar al panel</td><td>Usuario: <strong>admin</strong> / Contraseña: <strong>esp12</strong></td></tr>
                             <tr><td>El temporizador no riega</td><td>Verifica que "Tempo" esté en VERDE</td></tr>
                             <tr><td>Zona en rojo</td><td>Revisa que el dispositivo esté encendido</td></tr>
@@ -462,12 +460,12 @@
         // ===== ESTADO DE ZONAS =====
         const GOOGLE_URL_1 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1";
         const GOOGLE_URL_2 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2";
-		const GOOGLE_URL_3 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3";
+        const GOOGLE_URL_3 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3";
 
         const zonas = [
             { url: GOOGLE_URL_1, cardId: "card1", statusId: "status1", href: "riego1/index.html" },
             { url: GOOGLE_URL_2, cardId: "card2", statusId: "status2", href: "riego2/index.html" },
-			{ url: GOOGLE_URL_3, cardId: "card3", statusId: "status3", href: "riego3/index.html" }
+            { url: GOOGLE_URL_3, cardId: "card3", statusId: "status3", href: "riego3/index.html" }
         ];
 
         async function checkDeviceStatus(zona) {
