@@ -200,6 +200,10 @@
         .manual-content .indice a:hover { color: #ffd700; }
         hr { border-color: #5a5a5a; margin: 20px 0; }
 
+        /* Estilo para el nuevo enlace del manual */
+        .manual-link { color: #00bcd4; text-decoration: underline; font-weight: bold; }
+        .manual-link:hover { color: #ffd700; }
+
         @media (min-width: 600px) {
             .manual-content .indice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; }
             .manual-content .steps { flex-direction: row; flex-wrap: wrap; }
@@ -326,7 +330,6 @@
                 </div>
                 <div id="sec3">
                     <h2>3️⃣ Control desde cualquier lugar</h2>
-                    <p>🌍 Accede desde cualquier parte del mundo con tu usuario y contraseña.</p>
                     <p>🌍 <a href="https://portaljar.github.io/gabi/index.html" class="manual-link" target="_blank">Accede desde cualquier parte del mundo con tu usuario y contraseña.</a></p>
                     <div class="warning"><strong>📡 Requisito:</strong> Los dispositivos deben tener conexión a internet.</div>
                 </div>
@@ -402,6 +405,19 @@
 
     <script>
         // ============================================================
+        // 📡 CONFIGURACIÓN Y ESTADO DE ZONAS (Movido aquí arriba)
+        // ============================================================
+        const GOOGLE_URL_1 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1";
+        const GOOGLE_URL_2 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2";
+        const GOOGLE_URL_3 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3";
+
+        const zonas = [
+            { url: GOOGLE_URL_1, cardId: "card1", statusId: "status1", href: "riego1/index.html" },
+            { url: GOOGLE_URL_2, cardId: "card2", statusId: "status2", href: "riego2/index.html" },
+            { url: GOOGLE_URL_3, cardId: "card3", statusId: "status3", href: "riego3/index.html" }
+        ];
+
+        // ============================================================
         // 🔐 CREDENCIALES — cambia aquí usuario y contraseña
         // ============================================================
         const USUARIO = "admin";
@@ -458,17 +474,7 @@
             showLogin();
         }
 
-        // ===== ESTADO DE ZONAS =====
-        const GOOGLE_URL_1 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1";
-        const GOOGLE_URL_2 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=2";
-        const GOOGLE_URL_3 = "https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=3";
-
-        const zonas = [
-            { url: GOOGLE_URL_1, cardId: "card1", statusId: "status1", href: "riego1/index.html" },
-            { url: GOOGLE_URL_2, cardId: "card2", statusId: "status2", href: "riego2/index.html" },
-            { url: GOOGLE_URL_3, cardId: "card3", statusId: "status3", href: "riego3/index.html" }
-        ];
-
+        // ===== CONTROL DE DISPOSITIVOS =====
         async function checkDeviceStatus(zona) {
             const card = document.getElementById(zona.cardId);
             const statusEl = document.getElementById(zona.statusId);
