@@ -268,7 +268,7 @@
     // ===================================
 
     // ==================== CONFIGURACIÓN DINÁMICA ====================
-    const NUM_ZONES = 6;  // 👈 CAMBIA AQUÍ EL NÚMERO DE ZONAS (ej: 4, 6, 8...)
+    const NUM_ZONES = 4;  // 👈 CAMBIA AQUÍ EL NÚMERO DE ZONAS (ej: 4, 6, 8...)
     // ===============================================================
     
     // Estado global
@@ -468,7 +468,7 @@ async function save_datos() {
     // Convertimos TODO el objeto acState a un String plano
     const jsonString = JSON.stringify(acState);
     
-    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXx ynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1', {
+    fetch('https://script.google.com/macros/s/AKfycbxIanMOMGcTPodFbZ9kgXxynv7M0mIsdO-MvN_gJLOJqHlSunTlT_unFK6VHPjDIt0Oew/exec?id=1', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' }, // 👈 Le mentimos al navegador para evitar CORS
         body: jsonString // Enviamos el String puro
